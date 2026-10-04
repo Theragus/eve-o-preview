@@ -131,6 +131,12 @@ namespace EveOPreview.Services.Implementation
                 if (cachedProcess == null)
                 {
                     var processInfo = new ProcessInfo(mainWindowHandle, process.OpenKernelHandle(), process.Id, title);
+                    // Clients behind the active one are "fully occluded" to Windows 11 and would otherwise be
+                    // scheduled as EcoQoS with a coarse timer until they are focused. Applied once per handle.
+                    if (!processInfo.TryDisablePowerThrottling())
+                    {
+                        _logger.Debug("Power throttling opt-out unavailable for PID {Pid} (0x{Handle:X})", process.Id, mainWindowHandle);
+                    }
                     ProcessCache.Add(mainWindowHandle, processInfo);
                     addedProcesses.Add(processInfo);
                 }
@@ -195,7 +201,12 @@ namespace EveOPreview.Services.Implementation
         {
             lock (_lockObj)
             {
-                foreach (var process in ProcessCache.Values) process.CloseKernelHandle();
+                foreach (var process in ProcessCache.Values)
+                {
+                    // Hand still-running clients back to Windows' default power management before releasing the handle.
+                    process.TryRestorePowerThrottling();
+                    process.CloseKernelHandle();
+                }
                 ProcessCache.Clear();
             }
         }

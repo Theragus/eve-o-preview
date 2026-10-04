@@ -47,6 +47,46 @@ namespace EveOPreview.Helper
             return pHandle;
         }
 
+        /// <summary>
+        /// Opts the client out of Windows 11 power throttling. By default Windows classifies a process whose
+        /// window is minimized or fully covered (for example an EVE client stacked behind the active one) as
+        /// low Quality of Service: it is scheduled as EcoQoS and its timer resolution request is ignored.
+        /// Both make the client's own frame pacing coarse and uneven, which is visible in its preview until it
+        /// is focused again. Setting the control bits with a cleared state turns that throttling off for the
+        /// process regardless of its window visibility. Requires PROCESS_SET_INFORMATION on the handle.
+        /// </summary>
+        public static bool TryDisablePowerThrottling(this IProcessInfo processInfo) =>
+            processInfo.TrySetPowerThrottling(KernelNativeMethods.PROCESS_POWER_THROTTLING_EXECUTION_SPEED | KernelNativeMethods.PROCESS_POWER_THROTTLING_IGNORE_TIMER_RESOLUTION);
+
+        /// <summary>Returns the client to the system-managed power throttling behaviour.</summary>
+        public static bool TryRestorePowerThrottling(this IProcessInfo processInfo) => processInfo.TrySetPowerThrottling(0);
+
+        private static bool TrySetPowerThrottling(this IProcessInfo processInfo, uint controlMask)
+        {
+            IntPtr handle = processInfo?.ProcessHandle ?? IntPtr.Zero;
+            if (handle == IntPtr.Zero || !OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000))
+            {
+                return false;
+            }
+
+            var state = new KernelNativeMethods.PROCESS_POWER_THROTTLING_STATE
+            {
+                Version = KernelNativeMethods.PROCESS_POWER_THROTTLING_CURRENT_VERSION,
+                ControlMask = controlMask,
+                StateMask = 0
+            };
+
+            try
+            {
+                return KernelNativeMethods.SetProcessInformation(handle, KernelNativeMethods.PROCESS_INFORMATION_CLASS.ProcessPowerThrottling,
+                    ref state, (uint)System.Runtime.InteropServices.Marshal.SizeOf<KernelNativeMethods.PROCESS_POWER_THROTTLING_STATE>());
+            }
+            catch (Exception ex) when (ex is EntryPointNotFoundException || ex is DllNotFoundException)
+            {
+                return false;
+            }
+        }
+
         public static void CloseKernelHandle(this IProcessInfo processInfo)
         {
             if (processInfo is ProcessInfo owned)
