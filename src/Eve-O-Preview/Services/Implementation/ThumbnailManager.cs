@@ -614,7 +614,15 @@ namespace EveOPreview.Services
             // No need to minimize EVE clients when switching out to non-EVE window (like thumbnail)
             if (!string.IsNullOrEmpty(foregroundWindowTitle))
             {
+                IntPtr previousActiveHandle = this._activeClient.Handle;
                 this.SwitchActiveClient(foregroundWindowHandle, foregroundWindowTitle);
+                // A switch made outside EVE-O (Alt+Tab, taskbar, clicking the game) bypasses ActivateClient,
+                // so the newly played client would keep its background CPU mask until the next preview click
+                // or cycle hotkey. Re-run the role assignment for the client Windows actually put in front.
+                if (previousActiveHandle != foregroundWindowHandle && !_stopped)
+                {
+                    this.UpdateActivationAffinity(foregroundWindowHandle, IntPtr.Zero, previousActiveHandle);
+                }
             }
 
             bool hideAllThumbnails = this._configuration.HideThumbnailsOnLostFocus && !(isClientWindow || isMainWindowActive);

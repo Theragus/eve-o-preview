@@ -149,6 +149,12 @@ If E threads exist, their mask replaces the background mask. The service does no
 
 Use source HWNDs to look up `IProcessInfo` before calling this service; apply affinity using its kernel `ProcessHandle`. Do not enumerate processes or recompute topology inside the keypress path.
 
+Role assignment runs from two places. `ActivateClient` (preview click, cycle and direct hotkeys) passes active/predicted/previous. `RefreshThumbnails` also calls `UpdateActivationAffinity` when `SwitchActiveClient` changes the active client because Windows put a different EVE window in front (Alt+Tab, taskbar, clicking the game); it passes no predicted client. Without this, a client focused outside EVE-O kept its background mask until the next hotkey or click. `SetActive` is excluded: `ActivateClient` applies affinity right after it with the real prediction.
+
+### Windows 11 power throttling opt-out
+
+Windows 11 assigns Quality of Service by window state: focused is High, visible is Medium, minimized or fully occluded is Low (EcoQoS: lower clock, efficiency cores) and the process's timer-resolution request is ignored while it is not visible ([SetProcessInformation](https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocessinformation), [Quality of Service](https://learn.microsoft.com/windows/win32/procthread/quality-of-service)). Stacked EVE clients are fully occluded, so their own frame pacing degrades until focused, visible as uneven previews. `ProcessMonitor` calls [ProcessHelpers.TryDisablePowerThrottling](../../Eve-O-Preview/Helper/ProcessHelpers.cs) once when it opens a client's kernel handle (`EXECUTION_SPEED | IGNORE_TIMER_RESOLUTION` in `ControlMask`, `StateMask = 0`) and `TryRestorePowerThrottling` on dispose. It needs the existing `PROCESS_SET_INFORMATION` right, is skipped below build 22000, and is not configurable. It is independent of `EnableAutomaticCpuAffinity` and does not replace Robin's FPS pacing. The effect on real client smoothness has not been measured here.
+
 ## Lifetime fixes and remaining validation boundaries
 
 ProcessMonitor owns disposable ProcessInfo kernel handles, disposes enumeration wrappers, locks cache mutation and returns snapshots. Unchanged polls do not open handles; title changes share ownership; removed/reused HWNDs release the old record. Thumbnail disposal releases DWM/static images/overlays/components and global mouse subscriptions. Static capture validates dimensions before acquiring a DC and frees GDI resources in finally.

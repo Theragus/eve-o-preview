@@ -156,5 +156,37 @@ namespace EveOPreview.Services.Interop
         public const uint BELOW_NORMAL_PRIORITY_CLASS = 0x00004000;
 
         #endregion
+
+        #region Process Power Throttling
+
+        // See https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocessinformation
+        [LibraryImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static partial bool SetProcessInformation(IntPtr hProcess, PROCESS_INFORMATION_CLASS processInformationClass, ref PROCESS_POWER_THROTTLING_STATE processInformation, uint processInformationSize);
+
+        public enum PROCESS_INFORMATION_CLASS
+        {
+            ProcessMemoryPriority = 0,
+            ProcessMemoryExhaustionInfo = 1,
+            ProcessAppMemoryInfo = 2,
+            ProcessInPrivateInfo = 3,
+            ProcessPowerThrottling = 4
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PROCESS_POWER_THROTTLING_STATE
+        {
+            public uint Version;
+            public uint ControlMask;
+            public uint StateMask;
+        }
+
+        public const uint PROCESS_POWER_THROTTLING_CURRENT_VERSION = 1;
+        // EcoQoS: reduced CPU frequency and preference for efficiency cores.
+        public const uint PROCESS_POWER_THROTTLING_EXECUTION_SPEED = 0x1;
+        // Lets Windows ignore the process's timer resolution request while it is not visible.
+        public const uint PROCESS_POWER_THROTTLING_IGNORE_TIMER_RESOLUTION = 0x4;
+
+        #endregion
     }
 }
