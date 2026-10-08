@@ -50,7 +50,8 @@ namespace EveOPreview.Configuration
 
         bool EnableThumbnailSnap { get; set; }
 
-        bool RequireAltClickToActivate { get; set; }
+        bool RequireModifierClickToActivate { get; set; }
+        ClickModifier ThumbnailClickModifier { get; set; }
 
         bool ThumbnailZoomEnabled { get; set; }
         int ThumbnailZoomFactor { get; set; }

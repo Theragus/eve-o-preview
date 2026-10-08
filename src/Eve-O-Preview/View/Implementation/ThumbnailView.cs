@@ -42,6 +42,9 @@ namespace EveOPreview.View
 
         #region Private fields
         private readonly ThumbnailOverlay _overlay;
+        // Click-through: while enabled, the preview and overlay carry WS_EX_TRANSPARENT so mouse input reaches the
+        // window beneath them. The style is lifted only while the configured modifier key is held down.
+        private bool _clickModifierHeld;
 
         // Part of the logic (namely current size / position management)
         // was moved to the view due to the performance reasons
@@ -105,6 +108,8 @@ namespace EveOPreview.View
             
             _mediator = mediator;
             _keyboardMouseEvents = keyboardMouseEvents;
+            _keyboardMouseEvents.KeyDown += GlobalKeyDown_Handler;
+            _keyboardMouseEvents.KeyUp += GlobalKeyUp_Handler;
 
             InitializeContextMenu();
         }
@@ -247,6 +252,8 @@ namespace EveOPreview.View
             {
                 IsActive = false;
                 ExitCustomMouseMode();
+                _keyboardMouseEvents.KeyDown -= GlobalKeyDown_Handler;
+                _keyboardMouseEvents.KeyUp -= GlobalKeyUp_Handler;
                 components?.Dispose();
                 _overlay?.Dispose();
             }
@@ -462,6 +469,7 @@ namespace EveOPreview.View
         {
             this.RefreshThumbnail(forceRefresh);
             this.RefreshAppearance(forceRefresh);
+            this.UpdateClickThrough();
         }
 
         public void RefreshAppearance() => RefreshAppearance(false);
@@ -753,8 +761,13 @@ namespace EveOPreview.View
             {
                 switch (e.Button)
                 {
-                    case MouseButtons.Left when this._config.RequireAltClickToActivate && (modifierKeys & Keys.Alt) == 0:
-                        // Passive previews: a plain or Ctrl click neither switches in nor out. Alt + click still activates below.
+                    case MouseButtons.Left when this._config.RequireModifierClickToActivate:
+                        // Click-through mode: input only reaches this form while the modifier is held, but
+                        // check again so a click racing the key release cannot switch clients.
+                        if ((modifierKeys & GetRequiredModifier()) != 0)
+                        {
+                            this.ActivateFromClick();
+                        }
                         break;
                     case MouseButtons.Left when modifierKeys == Keys.Control:
                         this.ThumbnailDeactivated?.Invoke(this.Id, false);
@@ -762,12 +775,7 @@ namespace EveOPreview.View
                     case MouseButtons.Left when modifierKeys == (Keys.Control | Keys.Shift):
                         break;
                     case MouseButtons.Left:
-                        var oldWindow = this._thumbnailManager.GetActiveClient();
-                        this.ThumbnailActivated?.Invoke(this.Id);
-                        this.SetHighlight();
-                        this.Refresh(false);
-
-                        oldWindow?.ClearBorder();
+                        this.ActivateFromClick();
                         break;
                     case MouseButtons.Right:
                         _rightClickStartPosition = Cursor.Position;
@@ -776,6 +784,83 @@ namespace EveOPreview.View
                         thumbnailContextMenu.Show(this, location);
                         break;
                 }
+            }
+        }
+        #endregion
+
+        #region Click-through
+        private void ActivateFromClick()
+        {
+            var oldWindow = this._thumbnailManager.GetActiveClient();
+            this.ThumbnailActivated?.Invoke(this.Id);
+            this.SetHighlight();
+            this.Refresh(false);
+
+            oldWindow?.ClearBorder();
+        }
+
+        private Keys GetRequiredModifier() => this._config.ThumbnailClickModifier switch
+        {
+            ClickModifier.Ctrl => Keys.Control,
+            ClickModifier.Shift => Keys.Shift,
+            _ => Keys.Alt
+        };
+
+        private bool IsRequiredModifierKey(Keys keyCode) => this._config.ThumbnailClickModifier switch
+        {
+            ClickModifier.Ctrl => keyCode is Keys.ControlKey or Keys.LControlKey or Keys.RControlKey,
+            ClickModifier.Shift => keyCode is Keys.ShiftKey or Keys.LShiftKey or Keys.RShiftKey,
+            _ => keyCode is Keys.Menu or Keys.LMenu or Keys.RMenu
+        };
+
+        private void GlobalKeyDown_Handler(object sender, KeyEventArgs e)
+        {
+            if (this._clickModifierHeld || !this._config.RequireModifierClickToActivate || !IsRequiredModifierKey(e.KeyCode)) return;
+            this._clickModifierHeld = true;
+            this.UpdateClickThrough();
+        }
+
+        private void GlobalKeyUp_Handler(object sender, KeyEventArgs e)
+        {
+            if (!this._clickModifierHeld || !IsRequiredModifierKey(e.KeyCode)) return;
+            this._clickModifierHeld = false;
+            this.UpdateClickThrough();
+        }
+
+        // WS_EX_TRANSPARENT together with WS_EX_LAYERED makes Windows deliver mouse input to whatever lies
+        // beneath the preview, so a plain click lands in the game or desktop behind it. Hover zoom and the
+        // context menu are therefore only reachable while the modifier is held. Re-evaluated on every refresh
+        // so a settings or profile change takes effect without recreating the view.
+        private void UpdateClickThrough()
+        {
+            if (!this.IsHandleCreated) return;
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new Action(this.UpdateClickThrough));
+                return;
+            }
+            bool wanted = this._config.RequireModifierClickToActivate && !this._clickModifierHeld;
+            ApplyClickThrough(this.Handle, wanted);
+            if (this._overlay.IsHandleCreated) ApplyClickThrough(this._overlay.Handle, wanted);
+        }
+
+        private static void ApplyClickThrough(IntPtr handle, bool enable)
+        {
+            int exStyle = User32NativeMethods.GetWindowLong(handle, InteropConstants.GWL_EXSTYLE);
+            if (((exStyle & (int)InteropConstants.WS_EX_TRANSPARENT) != 0) == enable) return;
+            if (enable)
+            {
+                User32NativeMethods.SetWindowLong(handle, InteropConstants.GWL_EXSTYLE,
+                    exStyle | (int)InteropConstants.WS_EX_TRANSPARENT | (int)InteropConstants.WS_EX_LAYERED);
+                if ((exStyle & (int)InteropConstants.WS_EX_LAYERED) == 0)
+                {
+                    // A window that just became layered is not drawn until it has layer attributes.
+                    User32NativeMethods.SetLayeredWindowAttributes(handle, 0, 255, InteropConstants.LWA_ALPHA);
+                }
+            }
+            else
+            {
+                User32NativeMethods.SetWindowLong(handle, InteropConstants.GWL_EXSTYLE, exStyle & ~(int)InteropConstants.WS_EX_TRANSPARENT);
             }
         }
         #endregion

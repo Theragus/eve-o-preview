@@ -105,7 +105,7 @@ Messages live under [Mediator/Messages](../../Eve-O-Preview/Mediator/Messages); 
 | Geometry | 384x216; min 192x108, max 960x540; snapping enabled; login location `(5,5)` |
 | Appearance | `ThumbnailOpacity=0.5`, JSON `ThumbnailsOpacity`; overlays on, frames off; active highlight off, thickness 3 |
 | Zoom | Off, factor 2, NW; enabled property serialized as `EnableThumbnailZoom` |
-| Preview clicks | `RequireAltClickToActivate=false`; when on, only Alt + left click on a preview switches clients |
+| Preview clicks | `RequireModifierClickToActivate=false`, `ThumbnailClickModifier=Alt` (enum Alt/Ctrl/Shift, validated in `ApplyRestrictions`); when on, previews are click-through unless that key is held. The 10.0.0.14 key `RequireAltClickToActivate` is ignored, not migrated |
 | Layout dictionaries | Private `[JsonProperty]` members `PerClientLayout`, `FlatLayout`, `ClientLayout`, `DisableThumbnail`, `PriorityClients` remain part of the JSON contract |
 | Cycle groups | Ordered `SortedDictionary<int,string> ClientsOrder`; forward/backward hotkey string lists; parsed key lists are `[JsonIgnore]` |
 | FPS/audio | Shared nested models; desktop FPS disabled with 144/20/45 foreground/background/predicted targets; both audio presets off and custom list empty |

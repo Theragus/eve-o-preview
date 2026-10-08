@@ -14,6 +14,7 @@
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using EveOPreview.Configuration;
 using EveOPreview.Configuration.Implementation;
 using EveOPreview.Mediator.Messages;
 using System;
@@ -39,7 +40,8 @@ namespace EveOPreview.View
 		bool ShowThumbnailsAlwaysOnTop { get; set; }
 		bool HideThumbnailsOnLostFocus { get; set; }
 		bool EnablePerClientThumbnailLayouts { get; set; }
-		bool RequireAltClickToActivate { get; set; }
+		bool RequireModifierClickToActivate { get; set; }
+		ClickModifier ThumbnailClickModifier { get; set; }
 
 		Size ThumbnailSize { get; set; }
 

@@ -69,7 +69,8 @@ namespace EveOPreview.Configuration.Implementation
             this.ThumbnailMaximumSize = new Size(960, 540);
 
             this.EnableThumbnailSnap = true;
-            this.RequireAltClickToActivate = false;
+            this.RequireModifierClickToActivate = false;
+            this.ThumbnailClickModifier = ClickModifier.Alt;
 
             this.ThumbnailZoomEnabled = false;
             this.ThumbnailZoomFactor = 2;
@@ -151,7 +152,8 @@ namespace EveOPreview.Configuration.Implementation
 
         public bool EnableThumbnailSnap { get; set; }
 
-        public bool RequireAltClickToActivate { get; set; }
+        public bool RequireModifierClickToActivate { get; set; }
+        public ClickModifier ThumbnailClickModifier { get; set; }
 
         [JsonProperty("EnableThumbnailZoom")]
         public bool ThumbnailZoomEnabled { get; set; }
@@ -324,6 +326,7 @@ namespace EveOPreview.Configuration.Implementation
             ThumbnailMinimumSize = new Size(Math.Clamp(ThumbnailMinimumSize.Width, 1, 960), Math.Clamp(ThumbnailMinimumSize.Height, 1, 540));
             ThumbnailMaximumSize = new Size(Math.Clamp(ThumbnailMaximumSize.Width, ThumbnailMinimumSize.Width, 960), Math.Clamp(ThumbnailMaximumSize.Height, ThumbnailMinimumSize.Height, 540));
             if (!Enum.IsDefined(ThumbnailZoomAnchor)) ThumbnailZoomAnchor = ZoomAnchor.NW;
+            if (!Enum.IsDefined(ThumbnailClickModifier)) ThumbnailClickModifier = ClickModifier.Alt;
             HideThumbnailsDelay = Math.Max(0, HideThumbnailsDelay);
             this.ThumbnailRefreshPeriod = ThumbnailConfiguration.ApplyRestrictions(this.ThumbnailRefreshPeriod, 300, 1000);
             this.ThumbnailSize = new Size(ThumbnailConfiguration.ApplyRestrictions(this.ThumbnailSize.Width, this.ThumbnailMinimumSize.Width, this.ThumbnailMaximumSize.Width),

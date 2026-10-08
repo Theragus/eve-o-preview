@@ -262,7 +262,8 @@ namespace EveOPreview.Presenters
             this.View.ShowThumbnailsAlwaysOnTop = this._configuration.ShowThumbnailsAlwaysOnTop;
             this.View.HideThumbnailsOnLostFocus = this._configuration.HideThumbnailsOnLostFocus;
             this.View.EnablePerClientThumbnailLayouts = this._configuration.EnablePerClientThumbnailLayouts;
-            this.View.RequireAltClickToActivate = this._configuration.RequireAltClickToActivate;
+            this.View.RequireModifierClickToActivate = this._configuration.RequireModifierClickToActivate;
+            this.View.ThumbnailClickModifier = this._configuration.ThumbnailClickModifier;
 
             this.View.SetThumbnailSizeLimitations(this._configuration.ThumbnailMinimumSize, this._configuration.ThumbnailMaximumSize);
             this.View.ThumbnailSize = this._configuration.ThumbnailSize;
@@ -302,7 +303,8 @@ namespace EveOPreview.Presenters
             this._configuration.ShowThumbnailsAlwaysOnTop = this.View.ShowThumbnailsAlwaysOnTop;
             this._configuration.HideThumbnailsOnLostFocus = this.View.HideThumbnailsOnLostFocus;
             this._configuration.EnablePerClientThumbnailLayouts = this.View.EnablePerClientThumbnailLayouts;
-            this._configuration.RequireAltClickToActivate = this.View.RequireAltClickToActivate;
+            this._configuration.RequireModifierClickToActivate = this.View.RequireModifierClickToActivate;
+            this._configuration.ThumbnailClickModifier = this.View.ThumbnailClickModifier;
 
             this._configuration.ThumbnailSize = this.View.ThumbnailSize;
 

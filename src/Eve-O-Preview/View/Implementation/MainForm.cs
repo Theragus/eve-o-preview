@@ -14,6 +14,7 @@
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using EveOPreview.Configuration;
 using EveOPreview.Configuration.Implementation;
 using EveOPreview.Configuration.Model;
 using EveOPreview.Mediator.Messages;
@@ -171,13 +172,29 @@ namespace EveOPreview.View
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool RequireAltClickToActivate
+        public bool RequireModifierClickToActivate
         {
-            get => this.RequireAltClickToActivateCheckBox.Checked;
+            get => this.RequireModifierClickCheckBox.Checked;
             set
             {
                 this._suppressEvents = true;
-                this.RequireAltClickToActivateCheckBox.Checked = value;
+                this.RequireModifierClickCheckBox.Checked = value;
+                this._suppressEvents = false;
+            }
+        }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public ClickModifier ThumbnailClickModifier
+        {
+            get => this.ClickModifierCtrlRadioButton.Checked ? ClickModifier.Ctrl
+                : this.ClickModifierShiftRadioButton.Checked ? ClickModifier.Shift
+                : ClickModifier.Alt;
+            set
+            {
+                this._suppressEvents = true;
+                this.ClickModifierCtrlRadioButton.Checked = value == ClickModifier.Ctrl;
+                this.ClickModifierAltRadioButton.Checked = value == ClickModifier.Alt;
+                this.ClickModifierShiftRadioButton.Checked = value == ClickModifier.Shift;
                 this._suppressEvents = false;
             }
         }

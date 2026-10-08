@@ -23,6 +23,7 @@ namespace EveOPreview.Services
         public const int GWL_ID = (-12);
         public const int GWL_STYLE = (-16);
         public const int GWL_EXSTYLE = (-20);
+        public const UInt32 LWA_ALPHA = 0x00000002;
 
         public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
         public const uint SWP_NOSIZE = 0x0001;

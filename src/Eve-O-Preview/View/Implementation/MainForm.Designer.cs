@@ -65,7 +65,11 @@ namespace EveOPreview.View
             Label DescriptionLabel;
             Label NameLabel;
             chbAutoCpuAffinity = new CheckBox();
-            RequireAltClickToActivateCheckBox = new CheckBox();
+            RequireModifierClickCheckBox = new CheckBox();
+            ClickModifierPanel = new Panel();
+            ClickModifierAltRadioButton = new RadioButton();
+            ClickModifierCtrlRadioButton = new RadioButton();
+            ClickModifierShiftRadioButton = new RadioButton();
             MinimizeInactiveClientsCheckBox = new CheckBox();
             EnableClientLayoutTrackingCheckBox = new CheckBox();
             HideActiveClientThumbnailCheckBox = new CheckBox();
@@ -283,7 +287,8 @@ namespace EveOPreview.View
             // 
             GeneralSettingsPanel.BorderStyle = BorderStyle.FixedSingle;
             GeneralSettingsPanel.Controls.Add(chbAutoCpuAffinity);
-            GeneralSettingsPanel.Controls.Add(RequireAltClickToActivateCheckBox);
+            GeneralSettingsPanel.Controls.Add(RequireModifierClickCheckBox);
+            GeneralSettingsPanel.Controls.Add(ClickModifierPanel);
             GeneralSettingsPanel.Controls.Add(MinimizeInactiveClientsCheckBox);
             GeneralSettingsPanel.Controls.Add(EnableClientLayoutTrackingCheckBox);
             GeneralSettingsPanel.Controls.Add(HideActiveClientThumbnailCheckBox);
@@ -313,18 +318,64 @@ namespace EveOPreview.View
             chbAutoCpuAffinity.UseVisualStyleBackColor = true;
             chbAutoCpuAffinity.CheckedChanged += chbAutoCpuAffinity_CheckedChanged;
             // 
-            // RequireAltClickToActivateCheckBox
+            // RequireModifierClickCheckBox
             // 
-            RequireAltClickToActivateCheckBox.AutoSize = true;
-            RequireAltClickToActivateCheckBox.Location = new Point(9, 227);
-            RequireAltClickToActivateCheckBox.Margin = new Padding(4, 3, 4, 3);
-            RequireAltClickToActivateCheckBox.Name = "RequireAltClickToActivateCheckBox";
-            RequireAltClickToActivateCheckBox.Size = new Size(230, 19);
-            RequireAltClickToActivateCheckBox.TabIndex = 26;
-            RequireAltClickToActivateCheckBox.Text = "Switch clients only with Alt + click on preview";
-            instantToolTip.SetToolTip(RequireAltClickToActivateCheckBox, "A plain left click on a preview does nothing; hold Alt while clicking to switch to that client. Prevents accidental switches.");
-            RequireAltClickToActivateCheckBox.UseVisualStyleBackColor = true;
-            RequireAltClickToActivateCheckBox.CheckedChanged += OptionChanged_Handler;
+            RequireModifierClickCheckBox.AutoSize = true;
+            RequireModifierClickCheckBox.Location = new Point(9, 227);
+            RequireModifierClickCheckBox.Margin = new Padding(4, 3, 4, 3);
+            RequireModifierClickCheckBox.Name = "RequireModifierClickCheckBox";
+            RequireModifierClickCheckBox.Size = new Size(300, 19);
+            RequireModifierClickCheckBox.TabIndex = 26;
+            RequireModifierClickCheckBox.Text = "Clicks pass through previews unless this key is held:";
+            instantToolTip.SetToolTip(RequireModifierClickCheckBox, "Mouse input goes to the window behind the preview. Hold the selected key to click, hover or right-click a preview, e.g. to switch to that client.");
+            RequireModifierClickCheckBox.UseVisualStyleBackColor = true;
+            RequireModifierClickCheckBox.CheckedChanged += OptionChanged_Handler;
+            // 
+            // ClickModifierPanel
+            // 
+            ClickModifierPanel.Controls.Add(ClickModifierAltRadioButton);
+            ClickModifierPanel.Controls.Add(ClickModifierCtrlRadioButton);
+            ClickModifierPanel.Controls.Add(ClickModifierShiftRadioButton);
+            ClickModifierPanel.Location = new Point(28, 252);
+            ClickModifierPanel.Name = "ClickModifierPanel";
+            ClickModifierPanel.Size = new Size(260, 22);
+            ClickModifierPanel.TabIndex = 27;
+            // 
+            // ClickModifierAltRadioButton
+            // 
+            ClickModifierAltRadioButton.AutoSize = true;
+            ClickModifierAltRadioButton.Location = new Point(0, 0);
+            ClickModifierAltRadioButton.Margin = new Padding(4, 3, 4, 3);
+            ClickModifierAltRadioButton.Name = "ClickModifierAltRadioButton";
+            ClickModifierAltRadioButton.Size = new Size(60, 19);
+            ClickModifierAltRadioButton.TabIndex = 28;
+            ClickModifierAltRadioButton.Text = "Alt";
+            ClickModifierAltRadioButton.UseVisualStyleBackColor = true;
+            ClickModifierAltRadioButton.CheckedChanged += OptionChanged_Handler;
+            // 
+            // ClickModifierCtrlRadioButton
+            // 
+            ClickModifierCtrlRadioButton.AutoSize = true;
+            ClickModifierCtrlRadioButton.Location = new Point(70, 0);
+            ClickModifierCtrlRadioButton.Margin = new Padding(4, 3, 4, 3);
+            ClickModifierCtrlRadioButton.Name = "ClickModifierCtrlRadioButton";
+            ClickModifierCtrlRadioButton.Size = new Size(60, 19);
+            ClickModifierCtrlRadioButton.TabIndex = 29;
+            ClickModifierCtrlRadioButton.Text = "Ctrl";
+            ClickModifierCtrlRadioButton.UseVisualStyleBackColor = true;
+            ClickModifierCtrlRadioButton.CheckedChanged += OptionChanged_Handler;
+            // 
+            // ClickModifierShiftRadioButton
+            // 
+            ClickModifierShiftRadioButton.AutoSize = true;
+            ClickModifierShiftRadioButton.Location = new Point(140, 0);
+            ClickModifierShiftRadioButton.Margin = new Padding(4, 3, 4, 3);
+            ClickModifierShiftRadioButton.Name = "ClickModifierShiftRadioButton";
+            ClickModifierShiftRadioButton.Size = new Size(60, 19);
+            ClickModifierShiftRadioButton.TabIndex = 30;
+            ClickModifierShiftRadioButton.Text = "Shift";
+            ClickModifierShiftRadioButton.UseVisualStyleBackColor = true;
+            ClickModifierShiftRadioButton.CheckedChanged += OptionChanged_Handler;
             // 
             // MinimizeInactiveClientsCheckBox
             // 
@@ -2019,6 +2070,10 @@ namespace EveOPreview.View
         private Label lblLoadedProfileName;
         private Label lblProfilesExperimentalWarning;
         private CheckBox chbAutoCpuAffinity;
-        private CheckBox RequireAltClickToActivateCheckBox;
+        private CheckBox RequireModifierClickCheckBox;
+        private Panel ClickModifierPanel;
+        private RadioButton ClickModifierAltRadioButton;
+        private RadioButton ClickModifierCtrlRadioButton;
+        private RadioButton ClickModifierShiftRadioButton;
     }
 }
