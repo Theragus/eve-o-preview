@@ -143,6 +143,7 @@ namespace EveOPreview.View
             ZoomTabPage = new TabPage();
             FpsLimiterTabPage = new TabPage();
             fpsMainLayoutPanel = new TableLayoutPanel();
+            robinNoticeLabel = new Label();
             fpsTopPanel = new Panel();
             fpsBottomPanel = new Panel();
             groupBoxAudioMuting = new GroupBox();
@@ -1579,15 +1580,27 @@ namespace EveOPreview.View
             fpsMainLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             fpsMainLayoutPanel.Controls.Add(fpsTopPanel, 0, 0);
             fpsMainLayoutPanel.Controls.Add(fpsBottomPanel, 0, 1);
+            fpsMainLayoutPanel.Controls.Add(robinNoticeLabel, 0, 2);
             fpsMainLayoutPanel.Dock = DockStyle.Fill;
             fpsMainLayoutPanel.Location = new Point(0, 0);
             fpsMainLayoutPanel.Margin = new Padding(4, 3, 4, 3);
             fpsMainLayoutPanel.Name = "fpsMainLayoutPanel";
-            fpsMainLayoutPanel.RowCount = 2;
+            fpsMainLayoutPanel.RowCount = 3;
             fpsMainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 58F));
             fpsMainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            fpsMainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
             fpsMainLayoutPanel.Size = new Size(332, 409);
             fpsMainLayoutPanel.TabIndex = 0;
+            // 
+            // robinNoticeLabel
+            // 
+            robinNoticeLabel.Dock = DockStyle.Fill;
+            robinNoticeLabel.ForeColor = SystemColors.GrayText;
+            robinNoticeLabel.Name = "robinNoticeLabel";
+            robinNoticeLabel.Padding = new Padding(6, 0, 6, 4);
+            robinNoticeLabel.TabIndex = 2;
+            robinNoticeLabel.Text = "FPS limiting and audio muting load a small helper (Robin) into the EVE client to pace frames and stop sounds. With both disabled nothing is injected into EVE; every other feature works without it.";
+            robinNoticeLabel.TextAlign = ContentAlignment.BottomLeft;
             // 
             // fpsTopPanel
             // 
@@ -2036,6 +2049,7 @@ namespace EveOPreview.View
         private Label lblTitleBorderWidth;
         private TabPage FpsLimiterTabPage;
         private TableLayoutPanel fpsMainLayoutPanel;
+        private Label robinNoticeLabel;
         private Panel fpsBottomPanel;
         private Panel fpsTopPanel;
         private GroupBox groupBoxFpsLimits;

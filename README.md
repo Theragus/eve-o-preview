@@ -26,6 +26,8 @@ The program does NOT (and will NOT ever) do the following things:
 * broadcast any keyboard or mouse events
 * anyhow interact with EVE Online in a way that changes gameplay or provides an unfair advantage.
 
+Two optional features, the FPS limiter and audio muting (FPS / Audio tab), work differently from the rest of the program: they load a small helper library ("Robin") into the EVE client process to pace its frame presentation and to stop selected sounds. Robin sends no input, reads no game state and talks only to EVE-O Preview over a private pipe, but it does modify the running client in the technical sense. If you prefer EVE-O Preview to never touch the EVE process, leave both features disabled: nothing is then injected, and every other feature works as usual.
+
 <div style="page-break-after: always;"></div>
 
 **Under any conditions you should NOT use EVE-O Preview for any actions that break EULA or ToS of EVE Online.**

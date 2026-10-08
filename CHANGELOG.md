@@ -7,6 +7,15 @@ user-facing: what changed and why it matters, not how it was implemented.
 Format: `## [version] - YYYY-MM-DD` headings, newest first, with `Added`, `Changed`, `Fixed`
 subsections as needed.
 
+## [10.0.0.19] - 2026-10-08
+
+### Changed
+- The Robin helper DLL is now loaded from `%LocalAppData%\Eve-O Preview\Robin` instead of the
+  temp folder, and the application no longer embeds its libraries with Costura. Both reduce
+  antivirus false positives; behaviour is unchanged.
+- The FPS / Audio tab and the README now state that only these two features load a helper into
+  the EVE client, and that nothing is injected while both are off.
+
 ## [10.0.0.18] - 2026-10-08
 
 ### Fixed

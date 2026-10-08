@@ -180,8 +180,10 @@ public class HookService : IHookService
         string source = Path.Combine(AppContext.BaseDirectory, "Eve-O-Preview.Robin.dll");
         if (!File.Exists(source)) throw new FileNotFoundException("Publish the native Robin DLL beside the host executable.", source);
         // Loaded modules outlive the host. Load a versioned copy so installation files remain replaceable.
+        // The copy lives under LocalAppData, not TEMP: code executing from the temp directory is a common
+        // antivirus heuristic, and TEMP may be cleaned while a client still has the module loaded.
         string hash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(source)));
-        string directory = Path.Combine(Path.GetTempPath(), "Eve-O Preview", "Robin", hash);
+        string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Eve-O Preview", "Robin", hash);
         Directory.CreateDirectory(directory);
         string path = Path.Combine(directory, "Eve-O-Preview.Robin.dll");
         try { File.Copy(source, path, overwrite: false); }

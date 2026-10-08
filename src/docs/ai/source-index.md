@@ -90,8 +90,6 @@ Use [the entry guide](../../README.md) to route by feature; use this page when a
 | [src/Eve-O-Preview/Eve-O-Preview.csproj](../../../src/Eve-O-Preview/Eve-O-Preview.csproj) | Project target, dependencies, configuration, artifacts and build inclusion. | [build-and-test](build-and-test.md) |
 | [src/Eve-O-Preview/Eve-O-Preview.sln](../../../src/Eve-O-Preview/Eve-O-Preview.sln) | Application-only nested solution; excludes tests. | [build-and-test](build-and-test.md) |
 | [src/Eve-O-Preview/EveoPreviewRootCA.crt](../../../src/Eve-O-Preview/EveoPreviewRootCA.crt) | Public X.509 certificate copied by project/packager; no private key present. | [build-and-test](build-and-test.md) |
-| [src/Eve-O-Preview/FodyWeavers.xml](../../../src/Eve-O-Preview/FodyWeavers.xml) | Costura weaving configuration. | [build-and-test](build-and-test.md) |
-| [src/Eve-O-Preview/FodyWeavers.xsd](../../../src/Eve-O-Preview/FodyWeavers.xsd) | Generated weaver schema. | [build-and-test](build-and-test.md) |
 | [src/Eve-O-Preview/LICENSE.txt](../../../src/Eve-O-Preview/LICENSE.txt) | Packaged GPL v3 text; identical to root LICENSE. | [build-and-test](build-and-test.md) |
 | [src/Eve-O-Preview/Launch Eve-O Preview with Verbose Logging.cmd](<../../../src/Eve-O-Preview/Launch Eve-O Preview with Verbose Logging.cmd>) | Starts app with -v; does not change working directory. | [build-and-test](build-and-test.md) |
 | [src/Eve-O-Preview/Program.cs](../../../src/Eve-O-Preview/Program.cs) | STA startup, single-instance workaround, logger, Autofac composition, sidecar dispatch. | [application-and-configuration](application-and-configuration.md) |
