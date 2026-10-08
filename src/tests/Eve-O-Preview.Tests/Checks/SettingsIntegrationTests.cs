@@ -141,7 +141,7 @@ public sealed class SettingsIntegrationTests(ITestOutputHelper output)
         form.EnableAutomaticCpuAffinity = true;
         form.EnableAutomaticCpuAffinity = false;
         Assert.Equal(0, saves);
-        Control<CheckBox>(form, "chbAutoCpuAffinity").Checked = true;
+        Control<EveOPreview.View.CustomControl.ToggleCheckBox>(form, "chbAutoCpuAffinity").Checked = true;
         Assert.Equal(1, saves); // Invalid font load must not leave all UI events suppressed.
         form.TitleFontSettings = config.TitleFontSettings;
         Control<TextBox>(form, "txtFontOutlineWidth").Text = "3.5";
