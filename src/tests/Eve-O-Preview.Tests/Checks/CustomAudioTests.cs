@@ -74,6 +74,14 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
         bool first = true;
+        // Like the production server: after replying, wait for the client to read and close instead of
+        // WaitForPipeDrain, which throws if the client has already closed the pipe, faulting this task and
+        // leaving the next command to time out. That race produced intermittent failures on CI.
+        async Task WaitForPeerToClose()
+        {
+            try { await server.ReadAsync(new byte[1], timeout.Token); }
+            catch (IOException) { }
+        }
         async Task<uint[]> ReceiveUpdate()
         {
             byte[] header = new byte[2];
@@ -85,7 +93,7 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
                 if (atomicReplace)
                 {
                     await server.WriteAsync(new byte[] { 2 }, timeout.Token);
-                    server.WaitForPipeDrain();
+                    await WaitForPeerToClose();
                 }
                 server.Disconnect(); // Legacy servers don't answer unknown queries.
                 first = false;
@@ -96,7 +104,7 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
             await server.ReadExactlyAsync(header, timeout.Token);
             Assert.Equal(new byte[] { 0xA2, 0xC1 }, header);
             await server.WriteAsync(new byte[] { 1 }, timeout.Token);
-            server.WaitForPipeDrain();
+            await WaitForPeerToClose();
             server.Disconnect();
             }
 
@@ -110,7 +118,7 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
             byte[] payload = new byte[count * 4];
             await server.ReadExactlyAsync(payload, timeout.Token);
             await server.WriteAsync(new byte[] { 1 }, timeout.Token);
-            server.WaitForPipeDrain();
+            await WaitForPeerToClose();
             server.Disconnect();
             return Enumerable.Range(0, count).Select(i => BitConverter.ToUInt32(payload, i * 4)).ToArray();
         }
