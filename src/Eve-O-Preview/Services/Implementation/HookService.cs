@@ -36,6 +36,12 @@ namespace EveOPreview.Services.Implementation;
 public class HookService : IHookService
 {
     private const int PipeTimeoutMs = 1000;
+    // Robin serves one connection at a time and recreates its pipe instance after each request, so a
+    // command that follows another needs to tolerate the gap until the server listens again. The
+    // discovery ping keeps a short budget: for a client without Robin the pipe does not exist and the
+    // connect waits out its whole timeout.
+    private const int ConnectTimeoutMs = 400;
+    private const int PingConnectTimeoutMs = 100;
     private const int MaxMutedIds = 1024;
     private readonly IThumbnailConfiguration _configuration;
     private readonly ILogger _logger;
@@ -52,7 +58,7 @@ public class HookService : IHookService
 
     public bool Ping(IntPtr handle) => PingAsync(handle).GetAwaiter().GetResult();
     private async Task<bool> PingAsync(IntPtr handle) =>
-        await SendAsync(handle, w => { w.Write((byte)0xA1); w.Write((byte)0xB2); }).ConfigureAwait(false) == 1;
+        await SendAsync(handle, w => { w.Write((byte)0xA1); w.Write((byte)0xB2); }, connectTimeoutMs: PingConnectTimeoutMs).ConfigureAwait(false) == 1;
 
     public async Task<string> GetVersionAsync(IntPtr handle)
     {
@@ -64,7 +70,7 @@ public class HookService : IHookService
             await gate.WaitAsync(timeout.Token).ConfigureAwait(false);
             entered = true;
             using var client = new NamedPipeClientStream(".", $"EveoRobin_{handle}", PipeDirection.InOut, PipeOptions.Asynchronous);
-            await client.ConnectAsync(100, timeout.Token).ConfigureAwait(false);
+            await client.ConnectAsync(ConnectTimeoutMs, timeout.Token).ConfigureAwait(false);
             await client.WriteAsync(new byte[] { 0xA1, 0xB7 }, timeout.Token).ConfigureAwait(false);
             var lengthBytes = new byte[4];
             await client.ReadExactlyAsync(lengthBytes, timeout.Token).ConfigureAwait(false);
@@ -304,7 +310,7 @@ public class HookService : IHookService
         })).ConfigureAwait(false);
     }
 
-    private async Task<int> SendAsync(IntPtr handle, Action<BinaryWriter> write, bool reply = true, int timeoutMs = PipeTimeoutMs, bool takeGate = true)
+    private async Task<int> SendAsync(IntPtr handle, Action<BinaryWriter> write, bool reply = true, int timeoutMs = PipeTimeoutMs, bool takeGate = true, int connectTimeoutMs = ConnectTimeoutMs)
     {
         if (handle == IntPtr.Zero) return -1;
         var gate = _pipeGates.GetOrAdd(handle, _ => new SemaphoreSlim(1, 1));
@@ -314,7 +320,7 @@ public class HookService : IHookService
         {
             if (takeGate) { await gate.WaitAsync(timeout.Token).ConfigureAwait(false); entered = true; }
             using var client = new NamedPipeClientStream(".", $"EveoRobin_{handle}", reply ? PipeDirection.InOut : PipeDirection.Out, PipeOptions.Asynchronous);
-            await client.ConnectAsync(100, timeout.Token).ConfigureAwait(false);
+            await client.ConnectAsync(Math.Min(connectTimeoutMs, timeoutMs), timeout.Token).ConfigureAwait(false);
             using var payload = new MemoryStream();
             using (var writer = new BinaryWriter(payload, Encoding.UTF8, leaveOpen: true)) write(writer);
             await client.WriteAsync(payload.GetBuffer().AsMemory(0, (int)payload.Length), timeout.Token).ConfigureAwait(false);

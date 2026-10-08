@@ -7,6 +7,13 @@ user-facing: what changed and why it matters, not how it was implemented.
 Format: `## [version] - YYYY-MM-DD` headings, newest first, with `Added`, `Changed`, `Fixed`
 subsections as needed.
 
+## [10.0.0.23] - 2026-10-08
+
+### Fixed
+- Settings sent to the Robin helper (FPS limits, muted sounds) could be dropped when the client was
+  busy, because each command gave the helper only 100 ms to accept the connection. It now waits up
+  to 400 ms; client discovery keeps the short wait so clients without Robin are not slowed down.
+
 ## [10.0.0.22] - 2026-10-08
 
 ### Fixed
