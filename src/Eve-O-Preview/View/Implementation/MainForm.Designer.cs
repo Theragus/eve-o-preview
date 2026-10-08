@@ -64,19 +64,19 @@ namespace EveOPreview.View
             Label DocumentationLinkLabel;
             Label DescriptionLabel;
             Label NameLabel;
-            chbAutoCpuAffinity = new CheckBox();
-            RequireModifierClickCheckBox = new CheckBox();
+            chbAutoCpuAffinity = new ToggleCheckBox();
+            RequireModifierClickCheckBox = new ToggleCheckBox();
             ClickModifierPanel = new Panel();
             ClickModifierAltRadioButton = new RadioButton();
             ClickModifierCtrlRadioButton = new RadioButton();
             ClickModifierShiftRadioButton = new RadioButton();
-            MinimizeInactiveClientsCheckBox = new CheckBox();
-            EnableClientLayoutTrackingCheckBox = new CheckBox();
-            HideActiveClientThumbnailCheckBox = new CheckBox();
-            ShowThumbnailsAlwaysOnTopCheckBox = new CheckBox();
-            HideThumbnailsOnLostFocusCheckBox = new CheckBox();
-            EnablePerClientThumbnailsLayoutsCheckBox = new CheckBox();
-            MinimizeToTrayCheckBox = new CheckBox();
+            MinimizeInactiveClientsCheckBox = new ToggleCheckBox();
+            EnableClientLayoutTrackingCheckBox = new ToggleCheckBox();
+            HideActiveClientThumbnailCheckBox = new ToggleCheckBox();
+            ShowThumbnailsAlwaysOnTopCheckBox = new ToggleCheckBox();
+            HideThumbnailsOnLostFocusCheckBox = new ToggleCheckBox();
+            EnablePerClientThumbnailsLayoutsCheckBox = new ToggleCheckBox();
+            MinimizeToTrayCheckBox = new ToggleCheckBox();
             ThumbnailsWidthNumericEdit = new NumericUpDown();
             ThumbnailsHeightNumericEdit = new NumericUpDown();
             ThumbnailOpacityTrackBar = new TrackBar();
@@ -90,7 +90,7 @@ namespace EveOPreview.View
             ZoomAanchorSRadioButton = new RadioButton();
             ZoomAanchorERadioButton = new RadioButton();
             ZoomAanchorSWRadioButton = new RadioButton();
-            EnableThumbnailZoomCheckBox = new CheckBox();
+            EnableThumbnailZoomCheckBox = new ToggleCheckBox();
             ThumbnailZoomFactorNumericEdit = new NumericUpDown();
             groupBoxOverlayFont = new GroupBox();
             lblTitleOffsetTop = new Label();
@@ -105,9 +105,9 @@ namespace EveOPreview.View
             btnSetOverlayFont = new Button();
             HighlightColorLabel = new Label();
             ActiveClientHighlightColorButton = new Panel();
-            EnableActiveClientHighlightCheckBox = new CheckBox();
-            ShowThumbnailOverlaysCheckBox = new CheckBox();
-            ShowThumbnailFramesCheckBox = new CheckBox();
+            EnableActiveClientHighlightCheckBox = new ToggleCheckBox();
+            ShowThumbnailOverlaysCheckBox = new ToggleCheckBox();
+            ShowThumbnailFramesCheckBox = new ToggleCheckBox();
             activeClientsSplitContainer = new SplitContainer();
             groupBoxToggleHideAllThumbnails = new GroupBox();
             btnMinimizeAllClients = new Button();
@@ -150,14 +150,14 @@ namespace EveOPreview.View
             lblCustomMutedEventIds = new Label();
             txtCustomMutedEventIds = new TextBox();
             lblCustomMutedEventIdsHint = new Label();
-            chbIsLocationBannerMuted = new CheckBox();
-            chbIsGateTunnelMuted = new CheckBox();
+            chbIsLocationBannerMuted = new ToggleCheckBox();
+            chbIsGateTunnelMuted = new ToggleCheckBox();
             groupBoxFpsLimits = new GroupBox();
             btnDummyFpsSave = new Button();
             numericFpsPredictedLimit = new NumericUpDown();
             numericFpsBackgroundLimit = new NumericUpDown();
             numericFpsForegroundLimit = new NumericUpDown();
-            chbIsFpsThrottlingEnabled = new CheckBox();
+            chbIsFpsThrottlingEnabled = new ToggleCheckBox();
             tabPageProfiles = new TabPage();
             splitContainerMainProfiles = new SplitContainer();
             lblProfilesExperimentalWarning = new Label();
@@ -286,7 +286,7 @@ namespace EveOPreview.View
             // 
             // GeneralSettingsPanel
             // 
-            GeneralSettingsPanel.BorderStyle = BorderStyle.FixedSingle;
+            GeneralSettingsPanel.BorderStyle = BorderStyle.None;
             GeneralSettingsPanel.Controls.Add(chbAutoCpuAffinity);
             GeneralSettingsPanel.Controls.Add(RequireModifierClickCheckBox);
             GeneralSettingsPanel.Controls.Add(ClickModifierPanel);
@@ -485,7 +485,7 @@ namespace EveOPreview.View
             // 
             // ThumbnailSettingsPanel
             // 
-            ThumbnailSettingsPanel.BorderStyle = BorderStyle.FixedSingle;
+            ThumbnailSettingsPanel.BorderStyle = BorderStyle.None;
             ThumbnailSettingsPanel.Controls.Add(HeigthLabel);
             ThumbnailSettingsPanel.Controls.Add(WidthLabel);
             ThumbnailSettingsPanel.Controls.Add(ThumbnailsWidthNumericEdit);
@@ -576,7 +576,7 @@ namespace EveOPreview.View
             // 
             // ZoomSettingsPanel
             // 
-            ZoomSettingsPanel.BorderStyle = BorderStyle.FixedSingle;
+            ZoomSettingsPanel.BorderStyle = BorderStyle.None;
             ZoomSettingsPanel.Controls.Add(ZoomFactorLabel);
             ZoomSettingsPanel.Controls.Add(ZoomAnchorPanel);
             ZoomSettingsPanel.Controls.Add(ZoomAnchorLabel);
@@ -601,7 +601,7 @@ namespace EveOPreview.View
             // 
             // ZoomAnchorPanel
             // 
-            ZoomAnchorPanel.BorderStyle = BorderStyle.FixedSingle;
+            ZoomAnchorPanel.BorderStyle = BorderStyle.None;
             ZoomAnchorPanel.Controls.Add(ZoomAanchorNWRadioButton);
             ZoomAnchorPanel.Controls.Add(ZoomAanchorNRadioButton);
             ZoomAnchorPanel.Controls.Add(ZoomAanchorNERadioButton);
@@ -777,7 +777,7 @@ namespace EveOPreview.View
             // 
             // OverlaySettingsPanel
             // 
-            OverlaySettingsPanel.BorderStyle = BorderStyle.FixedSingle;
+            OverlaySettingsPanel.BorderStyle = BorderStyle.None;
             OverlaySettingsPanel.Controls.Add(groupBoxOverlayFont);
             OverlaySettingsPanel.Controls.Add(HighlightColorLabel);
             OverlaySettingsPanel.Controls.Add(ActiveClientHighlightColorButton);
@@ -984,7 +984,7 @@ namespace EveOPreview.View
             // 
             // ClientsPanel
             // 
-            ClientsPanel.BorderStyle = BorderStyle.FixedSingle;
+            ClientsPanel.BorderStyle = BorderStyle.None;
             ClientsPanel.Controls.Add(activeClientsSplitContainer);
             ClientsPanel.Dock = DockStyle.Fill;
             ClientsPanel.Location = new Point(0, 0);
@@ -1191,7 +1191,7 @@ namespace EveOPreview.View
             // 
             // removeGroupButton
             // 
-            removeGroupButton.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            removeGroupButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             removeGroupButton.Location = new Point(245, 29);
             removeGroupButton.Margin = new Padding(4, 3, 4, 3);
             removeGroupButton.Name = "removeGroupButton";
@@ -1203,7 +1203,7 @@ namespace EveOPreview.View
             // 
             // addClientToCycleGroupButton
             // 
-            addClientToCycleGroupButton.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            addClientToCycleGroupButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             addClientToCycleGroupButton.Location = new Point(272, 152);
             addClientToCycleGroupButton.Margin = new Padding(4, 3, 4, 3);
             addClientToCycleGroupButton.Name = "addClientToCycleGroupButton";
@@ -1215,7 +1215,7 @@ namespace EveOPreview.View
             // 
             // cycleGroupMoveClientOrderUpButton
             // 
-            cycleGroupMoveClientOrderUpButton.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            cycleGroupMoveClientOrderUpButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             cycleGroupMoveClientOrderUpButton.Location = new Point(204, 152);
             cycleGroupMoveClientOrderUpButton.Margin = new Padding(4, 3, 4, 3);
             cycleGroupMoveClientOrderUpButton.Name = "cycleGroupMoveClientOrderUpButton";
@@ -1237,7 +1237,7 @@ namespace EveOPreview.View
             // 
             // removeClientToCycleGroupButton
             // 
-            removeClientToCycleGroupButton.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            removeClientToCycleGroupButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             removeClientToCycleGroupButton.Location = new Point(245, 152);
             removeClientToCycleGroupButton.Margin = new Padding(4, 3, 4, 3);
             removeClientToCycleGroupButton.Name = "removeClientToCycleGroupButton";
@@ -1259,7 +1259,7 @@ namespace EveOPreview.View
             // 
             // addNewGroupButton
             // 
-            addNewGroupButton.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            addNewGroupButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             addNewGroupButton.Location = new Point(272, 29);
             addNewGroupButton.Margin = new Padding(4, 3, 4, 3);
             addNewGroupButton.Name = "addNewGroupButton";
@@ -1422,7 +1422,7 @@ namespace EveOPreview.View
             // AboutPanel
             // 
             AboutPanel.BackColor = Color.Transparent;
-            AboutPanel.BorderStyle = BorderStyle.FixedSingle;
+            AboutPanel.BorderStyle = BorderStyle.None;
             AboutPanel.Controls.Add(lblLiabilityDisclaimer);
             AboutPanel.Controls.Add(CreditMaintLabel);
             AboutPanel.Controls.Add(DocumentationLinkLabel);
@@ -1484,7 +1484,7 @@ namespace EveOPreview.View
             // VersionLabel
             // 
             VersionLabel.AutoSize = true;
-            VersionLabel.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            VersionLabel.Font = new Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point);
             VersionLabel.Location = new Point(155, 10);
             VersionLabel.Margin = new Padding(4, 0, 4, 0);
             VersionLabel.Name = "VersionLabel";
@@ -1495,7 +1495,7 @@ namespace EveOPreview.View
             // NameLabel
             // 
             NameLabel.AutoSize = true;
-            NameLabel.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            NameLabel.Font = new Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point);
             NameLabel.Location = new Point(5, 10);
             NameLabel.Margin = new Padding(4, 0, 4, 0);
             NameLabel.Name = "NameLabel";
@@ -1540,7 +1540,7 @@ namespace EveOPreview.View
             ContentTabControl.Controls.Add(AboutTabPage);
             ContentTabControl.Dock = DockStyle.Fill;
             ContentTabControl.DrawMode = TabDrawMode.OwnerDrawFixed;
-            ContentTabControl.ItemSize = new Size(35, 120);
+            ContentTabControl.ItemSize = new Size(40, 132);
             ContentTabControl.Location = new Point(0, 0);
             ContentTabControl.Margin = new Padding(4, 3, 4, 3);
             ContentTabControl.Multiline = true;
@@ -1549,7 +1549,6 @@ namespace EveOPreview.View
             ContentTabControl.Size = new Size(460, 417);
             ContentTabControl.SizeMode = TabSizeMode.Fixed;
             ContentTabControl.TabIndex = 7;
-            ContentTabControl.DrawItem += ContentTabControl_DrawItem;
             ContentTabControl.DpiChangedAfterParent += ContentTabControl_DpiChangedAfterParent;
             // 
             // ZoomTabPage
@@ -1987,12 +1986,12 @@ namespace EveOPreview.View
         private NotifyIcon NotifyIcon;
 		private ContextMenuStrip TrayMenu;
 		private TabPage ZoomTabPage;
-		private CheckBox EnableClientLayoutTrackingCheckBox;
-		private CheckBox HideActiveClientThumbnailCheckBox;
-		private CheckBox ShowThumbnailsAlwaysOnTopCheckBox;
-		private CheckBox HideThumbnailsOnLostFocusCheckBox;
-		private CheckBox EnablePerClientThumbnailsLayoutsCheckBox;
-		private CheckBox MinimizeToTrayCheckBox;
+		private ToggleCheckBox EnableClientLayoutTrackingCheckBox;
+		private ToggleCheckBox HideActiveClientThumbnailCheckBox;
+		private ToggleCheckBox ShowThumbnailsAlwaysOnTopCheckBox;
+		private ToggleCheckBox HideThumbnailsOnLostFocusCheckBox;
+		private ToggleCheckBox EnablePerClientThumbnailsLayoutsCheckBox;
+		private ToggleCheckBox MinimizeToTrayCheckBox;
 		private NumericUpDown ThumbnailsWidthNumericEdit;
 		private NumericUpDown ThumbnailsHeightNumericEdit;
 		private TrackBar ThumbnailOpacityTrackBar;
@@ -2006,17 +2005,17 @@ namespace EveOPreview.View
 		private RadioButton ZoomAanchorSRadioButton;
 		private RadioButton ZoomAanchorERadioButton;
 		private RadioButton ZoomAanchorSWRadioButton;
-		private CheckBox EnableThumbnailZoomCheckBox;
+		private ToggleCheckBox EnableThumbnailZoomCheckBox;
 		private NumericUpDown ThumbnailZoomFactorNumericEdit;
 		private Label HighlightColorLabel;
 		private Panel ActiveClientHighlightColorButton;
-		private CheckBox EnableActiveClientHighlightCheckBox;
-		private CheckBox ShowThumbnailOverlaysCheckBox;
-		private CheckBox ShowThumbnailFramesCheckBox;
+		private ToggleCheckBox EnableActiveClientHighlightCheckBox;
+		private ToggleCheckBox ShowThumbnailOverlaysCheckBox;
+		private ToggleCheckBox ShowThumbnailFramesCheckBox;
 		private CheckedListBox ThumbnailsList;
 		private LinkLabel DocumentationLink;
 		private Label VersionLabel;
-		private CheckBox MinimizeInactiveClientsCheckBox;
+		private ToggleCheckBox MinimizeInactiveClientsCheckBox;
         private Panel CycleGroupPanel;
         private Button addClientToCycleGroupButton;
         private Button cycleGroupMoveClientOrderUpButton;
@@ -2054,7 +2053,7 @@ namespace EveOPreview.View
         private Panel fpsTopPanel;
         private GroupBox groupBoxFpsLimits;
         private NumericUpDown numericFpsForegroundLimit;
-        private CheckBox chbIsFpsThrottlingEnabled;
+        private ToggleCheckBox chbIsFpsThrottlingEnabled;
         private NumericUpDown numericFpsPredictedLimit;
         private NumericUpDown numericFpsBackgroundLimit;
         private ToolTip instantToolTip;
@@ -2063,8 +2062,8 @@ namespace EveOPreview.View
         private Label lblCustomMutedEventIds;
         private TextBox txtCustomMutedEventIds;
         private Label lblCustomMutedEventIdsHint;
-        private CheckBox chbIsLocationBannerMuted;
-        private CheckBox chbIsGateTunnelMuted;
+        private ToggleCheckBox chbIsLocationBannerMuted;
+        private ToggleCheckBox chbIsGateTunnelMuted;
         private TextBox txtToggleHideAllActiveHotkey;
         private Label lblToggleHideAllActiveHotkey;
         private Button btnToggleHideAll;
@@ -2083,8 +2082,8 @@ namespace EveOPreview.View
         private ListBox listBoxProfiles;
         private Label lblLoadedProfileName;
         private Label lblProfilesExperimentalWarning;
-        private CheckBox chbAutoCpuAffinity;
-        private CheckBox RequireModifierClickCheckBox;
+        private ToggleCheckBox chbAutoCpuAffinity;
+        private ToggleCheckBox RequireModifierClickCheckBox;
         private Panel ClickModifierPanel;
         private RadioButton ClickModifierAltRadioButton;
         private RadioButton ClickModifierCtrlRadioButton;

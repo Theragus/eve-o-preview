@@ -586,29 +586,6 @@ namespace EveOPreview.View
 
 
         #region UI events
-        private void ContentTabControl_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            _logger.Verbose("MainForm.ContentTabControl_DrawItem: Drawing tab index {TabIndex}", e.Index);
-            TabControl control = (TabControl)sender;
-            TabPage page = control.TabPages[e.Index];
-            Rectangle bounds = control.GetTabRect(e.Index);
-
-            Graphics graphics = e.Graphics;
-
-            // Background and selection accent are painted by ThemedTabControl; only the caption is drawn here.
-            using Brush textBrush = new SolidBrush(SystemColors.ControlText);
-
-            // Use our own font
-            using Font font = new Font("Arial", this.Font.Size * 1.5f, FontStyle.Bold, GraphicsUnit.Pixel);
-
-            // Draw string and center the text
-            StringFormat stringFlags = new StringFormat();
-            stringFlags.Alignment = StringAlignment.Center;
-            stringFlags.LineAlignment = StringAlignment.Center;
-
-            graphics.DrawString(page.Text, font, textBrush, bounds, stringFlags);
-        }
-
         private void OptionChanged_Handler(object sender, EventArgs e)
         {
             if (this._suppressEvents)
@@ -1482,7 +1459,7 @@ namespace EveOPreview.View
             float scaleFactor = newDpi / 96f;
             _logger.Verbose("MainForm: DPI changed - NewDpi={NewDpi}, ScaleFactor={ScaleFactor}", newDpi, scaleFactor);
 
-            int originalHeight = 120;
+            int originalHeight = 132;
             this.ContentTabControl.ItemSize = new Size(this.ContentTabControl.ItemSize.Width, (int)(originalHeight * scaleFactor));
         }
 

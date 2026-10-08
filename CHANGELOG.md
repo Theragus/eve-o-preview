@@ -7,6 +7,12 @@ user-facing: what changed and why it matters, not how it was implemented.
 Format: `## [version] - YYYY-MM-DD` headings, newest first, with `Added`, `Changed`, `Fixed`
 subsections as needed.
 
+## [10.0.0.20] - 2026-10-08
+
+### Changed
+- Settings window refresh: toggle switches instead of checkboxes, icons and hover highlight in the
+  navigation, the Windows 11 UI font, and borderless pages. Behaviour and layout are unchanged.
+
 ## [10.0.0.19] - 2026-10-08
 
 ### Changed

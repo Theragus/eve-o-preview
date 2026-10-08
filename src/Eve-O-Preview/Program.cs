@@ -28,6 +28,7 @@ using MediatR;
 using Serilog;
 using Serilog.Events;
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -132,6 +133,9 @@ namespace EveOPreview
             // Follow the Windows light/dark setting (dark is Windows 11 only; ignored on older systems and in
             // high-contrast mode). Must run before any control is created. Preview windows use explicit colours.
             Application.SetColorMode(SystemColorMode.System);
+            // Windows 11 UI font; absent on Windows 10, where the WinForms default (Segoe UI) stays.
+            try { Application.SetDefaultFont(new Font("Segoe UI Variable Text", 9F, FontStyle.Regular, GraphicsUnit.Point)); }
+            catch (ArgumentException) { }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
         }
