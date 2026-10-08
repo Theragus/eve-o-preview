@@ -7,6 +7,13 @@ user-facing: what changed and why it matters, not how it was implemented.
 Format: `## [version] - YYYY-MM-DD` headings, newest first, with `Added`, `Changed`, `Fixed`
 subsections as needed.
 
+## [10.0.0.22] - 2026-10-08
+
+### Fixed
+- Toggle switches: the coloured line fragments in dark mode are gone for good (the switch is now
+  drawn entirely by EVE-O Preview, no longer on top of the Windows checkbox), and a Windows accent
+  that is too dark or grey to see no longer turns the switches black; the Windows blue is used then.
+
 ## [10.0.0.21] - 2026-10-08
 
 ### Fixed

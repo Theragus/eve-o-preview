@@ -23,9 +23,11 @@ namespace EveOPreview.View.CustomControl;
 
 /// <summary>
 /// Colours shared by the themed settings controls. The accent is the user's Windows accent colour
-/// (Settings > Personalization > Colors), read once from the DWM registry value as ABGR, with the
-/// Windows default blue as fallback. IsDark derives from the current SystemColors so it matches
-/// whatever Application.SetColorMode resolved to.
+/// (Settings > Personalization > Colors), read once from the DWM registry value as ABGR. Windows
+/// stores very dark or near-grey accents when "automatic from wallpaper" picks one; those would be
+/// invisible against the dark theme, so anything without enough brightness or saturation falls back
+/// to the Windows default blue. IsDark derives from the current SystemColors so it matches whatever
+/// Application.SetColorMode resolved to.
 /// </summary>
 internal static class ThemeColors
 {
@@ -42,7 +44,8 @@ internal static class ThemeColors
             if (OperatingSystem.IsWindows() &&
                 Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM", "AccentColor", null) is int abgr)
             {
-                return Color.FromArgb(abgr & 0xFF, (abgr >> 8) & 0xFF, (abgr >> 16) & 0xFF);
+                var accent = Color.FromArgb(abgr & 0xFF, (abgr >> 8) & 0xFF, (abgr >> 16) & 0xFF);
+                if (accent.GetBrightness() >= 0.3f && accent.GetBrightness() <= 0.85f && accent.GetSaturation() >= 0.3f) return accent;
             }
         }
         catch (Exception ex) when (ex is System.Security.SecurityException || ex is System.IO.IOException) { }
