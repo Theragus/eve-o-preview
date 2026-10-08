@@ -69,6 +69,7 @@ namespace EveOPreview.Configuration.Implementation
             this.ThumbnailMaximumSize = new Size(960, 540);
 
             this.EnableThumbnailSnap = true;
+            this.RequireAltClickToActivate = false;
 
             this.ThumbnailZoomEnabled = false;
             this.ThumbnailZoomFactor = 2;
@@ -149,6 +150,8 @@ namespace EveOPreview.Configuration.Implementation
         public Size ThumbnailMinimumSize { get; set; }
 
         public bool EnableThumbnailSnap { get; set; }
+
+        public bool RequireAltClickToActivate { get; set; }
 
         [JsonProperty("EnableThumbnailZoom")]
         public bool ThumbnailZoomEnabled { get; set; }

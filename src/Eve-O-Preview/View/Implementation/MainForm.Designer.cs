@@ -65,6 +65,7 @@ namespace EveOPreview.View
             Label DescriptionLabel;
             Label NameLabel;
             chbAutoCpuAffinity = new CheckBox();
+            RequireAltClickToActivateCheckBox = new CheckBox();
             MinimizeInactiveClientsCheckBox = new CheckBox();
             EnableClientLayoutTrackingCheckBox = new CheckBox();
             HideActiveClientThumbnailCheckBox = new CheckBox();
@@ -282,6 +283,7 @@ namespace EveOPreview.View
             // 
             GeneralSettingsPanel.BorderStyle = BorderStyle.FixedSingle;
             GeneralSettingsPanel.Controls.Add(chbAutoCpuAffinity);
+            GeneralSettingsPanel.Controls.Add(RequireAltClickToActivateCheckBox);
             GeneralSettingsPanel.Controls.Add(MinimizeInactiveClientsCheckBox);
             GeneralSettingsPanel.Controls.Add(EnableClientLayoutTrackingCheckBox);
             GeneralSettingsPanel.Controls.Add(HideActiveClientThumbnailCheckBox);
@@ -310,6 +312,19 @@ namespace EveOPreview.View
             instantToolTip.SetToolTip(chbAutoCpuAffinity, "Automatically manage and predict the active and background clients so the active clients run on Performance cores while background move to Efficient Cores");
             chbAutoCpuAffinity.UseVisualStyleBackColor = true;
             chbAutoCpuAffinity.CheckedChanged += chbAutoCpuAffinity_CheckedChanged;
+            // 
+            // RequireAltClickToActivateCheckBox
+            // 
+            RequireAltClickToActivateCheckBox.AutoSize = true;
+            RequireAltClickToActivateCheckBox.Location = new Point(9, 227);
+            RequireAltClickToActivateCheckBox.Margin = new Padding(4, 3, 4, 3);
+            RequireAltClickToActivateCheckBox.Name = "RequireAltClickToActivateCheckBox";
+            RequireAltClickToActivateCheckBox.Size = new Size(230, 19);
+            RequireAltClickToActivateCheckBox.TabIndex = 26;
+            RequireAltClickToActivateCheckBox.Text = "Switch clients only with Alt + click on preview";
+            instantToolTip.SetToolTip(RequireAltClickToActivateCheckBox, "A plain left click on a preview does nothing; hold Alt while clicking to switch to that client. Prevents accidental switches.");
+            RequireAltClickToActivateCheckBox.UseVisualStyleBackColor = true;
+            RequireAltClickToActivateCheckBox.CheckedChanged += OptionChanged_Handler;
             // 
             // MinimizeInactiveClientsCheckBox
             // 
@@ -1803,7 +1818,7 @@ namespace EveOPreview.View
             // 
             // NotifyIcon
             // 
-            NotifyIcon.ContextMenuStrip = TrayMenu;
+            NotifyIcon.MouseUp += NotifyIconMouseUp_Handler;
             NotifyIcon.Icon = (Icon)resources.GetObject("NotifyIcon.Icon");
             NotifyIcon.Text = "EVE-O Preview";
             NotifyIcon.Visible = true;
@@ -2004,5 +2019,6 @@ namespace EveOPreview.View
         private Label lblLoadedProfileName;
         private Label lblProfilesExperimentalWarning;
         private CheckBox chbAutoCpuAffinity;
+        private CheckBox RequireAltClickToActivateCheckBox;
     }
 }

@@ -753,6 +753,9 @@ namespace EveOPreview.View
             {
                 switch (e.Button)
                 {
+                    case MouseButtons.Left when this._config.RequireAltClickToActivate && (modifierKeys & Keys.Alt) == 0:
+                        // Passive previews: a plain or Ctrl click neither switches in nor out. Alt + click still activates below.
+                        break;
                     case MouseButtons.Left when modifierKeys == Keys.Control:
                         this.ThumbnailDeactivated?.Invoke(this.Id, false);
                         break;

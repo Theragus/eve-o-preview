@@ -17,6 +17,7 @@
 using EveOPreview.Configuration.Implementation;
 using EveOPreview.Configuration.Model;
 using EveOPreview.Mediator.Messages;
+using EveOPreview.Services.Interop;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -165,6 +166,18 @@ namespace EveOPreview.View
             {
                 this._suppressEvents = true;
                 this.HideThumbnailsOnLostFocusCheckBox.Checked = value;
+                this._suppressEvents = false;
+            }
+        }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool RequireAltClickToActivate
+        {
+            get => this.RequireAltClickToActivateCheckBox.Checked;
+            set
+            {
+                this._suppressEvents = true;
+                this.RequireAltClickToActivateCheckBox.Checked = value;
                 this._suppressEvents = false;
             }
         }
@@ -732,6 +745,28 @@ namespace EveOPreview.View
             base.Show();
             this.WindowState = FormWindowState.Normal;
             this.BringToFront();
+        }
+
+        private void NotifyIconMouseUp_Handler(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right)
+            {
+                return;
+            }
+
+            // WinForms opens NotifyIcon.ContextMenuStrip downward from the cursor and, with per-monitor DPI
+            // awareness, can leave the lower items (Exit) underneath the taskbar. Show the menu ourselves,
+            // opening away from the nearest screen edges, and make this window the foreground window first
+            // so the menu still closes when the user clicks somewhere else.
+            Point cursor = Cursor.Position;
+            Rectangle area = Screen.FromPoint(cursor).WorkingArea;
+            bool lowerHalf = cursor.Y > area.Top + area.Height / 2;
+            bool rightHalf = cursor.X > area.Left + area.Width / 2;
+            ToolStripDropDownDirection direction = lowerHalf
+                ? (rightHalf ? ToolStripDropDownDirection.AboveLeft : ToolStripDropDownDirection.AboveRight)
+                : (rightHalf ? ToolStripDropDownDirection.BelowLeft : ToolStripDropDownDirection.BelowRight);
+            User32NativeMethods.SetForegroundWindow(this.Handle);
+            this.TrayMenu.Show(cursor, direction);
         }
 
         private void ExitMenuItemClick_Handler(object sender, EventArgs e)
