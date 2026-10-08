@@ -39,4 +39,4 @@ Read the build guide for prerequisites, filters, native publishing, and manual v
 
 For documentation-only edits, check links, source references, and `git diff --check`; no application launch is needed. For behavior changes, run checks appropriate to the affected path and report what actually ran, what passed, and what remains unverified. Keep generated files, local profiles/logs, package caches, and release output out of unrelated diffs.
 
-Update the relevant guide when changing an invariant, protocol, feature route, or build command. Use stable symbol names and relative file links instead of copying large implementations or line-number inventories. Keep this entry point short; detailed explanations belong in `docs/ai/`.
+Add a user-facing entry to the root `CHANGELOG.md` for every behavior change; the release workflow publishes the matching version section as the release notes. Update the relevant guide when changing an invariant, protocol, feature route, or build command. Use stable symbol names and relative file links instead of copying large implementations or line-number inventories. Keep this entry point short; detailed explanations belong in `docs/ai/`.

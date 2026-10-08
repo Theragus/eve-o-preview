@@ -73,14 +73,33 @@ jobs:
 
       # On a tag push the release is attached to that tag. A manual run with release_tag set
       # creates the tag on the built commit as well, so a release can be cut from the Actions tab.
+      # Release notes come from CHANGELOG.md: the section whose heading matches the version being
+      # released (tag without the leading "v"). A missing section fails the release on purpose.
+      - name: Extract release notes from CHANGELOG.md
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.release_tag != ''
+        run: |
+          $tag = '${{ inputs.release_tag || github.ref_name }}'
+          $version = $tag.TrimStart('v')
+          $lines = Get-Content CHANGELOG.md
+          $start = [Array]::FindIndex($lines, [Predicate[string]]{ param($l) $l -match "^## \[$([regex]::Escape($version))\]" })
+          if ($start -lt 0) { Write-Error "CHANGELOG.md has no '## [$version]' section; add one before releasing."; exit 1 }
+          $body = @()
+          for ($i = $start + 1; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match '^## \[') { break }
+            $body += $lines[$i]
+          }
+          ($body -join "`n").Trim() | Set-Content -NoNewline release-notes.md
+          Get-Content release-notes.md
+
       - name: Attach to GitHub Release
         if: startsWith(github.ref, 'refs/tags/v') || inputs.release_tag != ''
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.release_tag || github.ref_name }}
           target_commitish: ${{ github.sha }}
+          name: EVE-O Preview ${{ inputs.release_tag || github.ref_name }}
+          body_path: release-notes.md
           files: EVE-O Preview.zip
-          generate_release_notes: true
 
   # The xUnit suite creates real WinForms windows on a private desktop. It has not been exercised
   # on a hosted runner before, so it is reported separately and does not block the build artifact.
