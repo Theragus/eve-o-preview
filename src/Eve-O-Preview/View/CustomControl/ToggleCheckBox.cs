@@ -25,11 +25,10 @@ namespace EveOPreview.View.CustomControl;
 /// A CheckBox drawn as a Windows 11 style toggle switch. It keeps the full CheckBox behaviour
 /// (Checked, CheckedChanged, keyboard, accessibility, designer binding); only the painting differs.
 /// Colours come from SystemColors so the control follows light and dark mode; the "on" track uses
-/// the application's gold accent. .NET 11 ships a built-in toggle appearance; this covers .NET 10.
+/// the Windows accent colour. .NET 11 ships a built-in toggle appearance; this covers .NET 10.
 /// </summary>
 public class ToggleCheckBox : CheckBox
 {
-    private static readonly Color Accent = Color.FromArgb(212, 175, 55);
     private const int TrackWidth = 40;
     private const int TrackHeight = 20;
     private const int Gap = 8;
@@ -57,8 +56,9 @@ public class ToggleCheckBox : CheckBox
         using (var back = new SolidBrush(Parent?.BackColor ?? BackColor)) g.FillRectangle(back, ClientRectangle);
 
         var track = new Rectangle(1, (Height - TrackHeight) / 2, TrackWidth, TrackHeight);
+        Color accent = ThemeColors.Accent;
         Color trackFill = !Enabled ? SystemColors.ControlDark
-            : Checked ? (_hover ? ControlPaint.Light(Accent, 0.15f) : Accent)
+            : Checked ? (_hover ? ControlPaint.Light(accent, 0.15f) : accent)
             : (_hover ? SystemColors.ControlLight : SystemColors.Control);
         Color trackBorder = Checked ? trackFill : SystemColors.ControlDarkDark;
         using (var path = RoundedRectangle(track, TrackHeight / 2))
@@ -72,14 +72,21 @@ public class ToggleCheckBox : CheckBox
         const int knobSize = TrackHeight - 8;
         int knobX = Checked ? track.Right - knobSize - 4 : track.Left + 4;
         var knob = new Rectangle(knobX, track.Top + 4, knobSize, knobSize);
-        using (var knobBrush = new SolidBrush(Checked ? Color.FromArgb(20, 20, 22) : SystemColors.ControlText))
+        // Windows draws the "on" knob in the theme's background colour: black on dark, white on light.
+        using (var knobBrush = new SolidBrush(Checked ? (ThemeColors.IsDark ? Color.Black : Color.White) : SystemColors.ControlText))
             g.FillEllipse(knobBrush, knob);
 
         var textBounds = new Rectangle(TrackWidth + Gap + 1, 0, Math.Max(0, Width - TrackWidth - Gap - 1), Height);
         TextRenderer.DrawText(g, Text, Font, textBounds, Enabled ? ForeColor : SystemColors.GrayText,
             TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.NoPadding | TextFormatFlags.EndEllipsis);
 
-        if (Focused && ShowFocusCues) ControlPaint.DrawFocusRectangle(g, new Rectangle(0, 0, Width - 1, Height - 1));
+        // Draw the focus cue with an explicit pen: the XOR-based ControlPaint.DrawFocusRectangle
+        // leaves coloured fragments on dark backgrounds when only part of the control repaints.
+        if (Focused && ShowFocusCues)
+        {
+            using var focus = new Pen(SystemColors.GrayText) { DashStyle = DashStyle.Dot };
+            g.DrawRectangle(focus, 0, 0, Width - 1, Height - 1);
+        }
     }
 
     private static GraphicsPath RoundedRectangle(Rectangle r, int radius)

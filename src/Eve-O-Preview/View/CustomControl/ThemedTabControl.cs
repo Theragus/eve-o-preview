@@ -22,7 +22,7 @@ using System.Windows.Forms;
 namespace EveOPreview.View.CustomControl;
 
 /// <summary>
-/// TabControl that paints its whole surface itself: strip, tabs, page border, a gold accent bar on
+/// TabControl that paints its whole surface itself: strip, tabs, page border, an accent bar on
 /// the selected tab, a hover highlight, and an icon glyph per tab. The native control leaves the
 /// strip and border in classic light colours and cannot draw icons without an ImageList, which is
 /// why everything is drawn here with SystemColors so it follows light and dark mode.
@@ -31,7 +31,6 @@ namespace EveOPreview.View.CustomControl;
 /// </summary>
 public class ThemedTabControl : TabControl
 {
-    private static readonly Color Accent = Color.FromArgb(212, 175, 55);
     private static readonly Dictionary<string, string> Glyphs = new(StringComparer.OrdinalIgnoreCase)
     {
         ["General"] = "",        // Settings
@@ -104,11 +103,11 @@ public class ThemedTabControl : TabControl
 
             if (selected)
             {
-                // Accent bar on the outer edge, matching the preview context menu's gold.
+                // Accent bar on the outer edge in the Windows accent colour.
                 Rectangle bar = Alignment == TabAlignment.Left
                     ? new Rectangle(bounds.X, bounds.Y + 6, 3, bounds.Height - 12)
                     : new Rectangle(bounds.X + 6, bounds.Y, bounds.Width - 12, 3);
-                using var accent = new SolidBrush(Accent);
+                using var accent = new SolidBrush(ThemeColors.Accent);
                 g.FillRectangle(accent, bar);
             }
 
@@ -118,7 +117,7 @@ public class ThemedTabControl : TabControl
             if (glyphFont != null && Glyphs.TryGetValue(TabPages[i].Text, out string glyph))
             {
                 var glyphBounds = new Rectangle(left, bounds.Y, 22, bounds.Height);
-                TextRenderer.DrawText(g, glyph, glyphFont, glyphBounds, selected ? Accent : text,
+                TextRenderer.DrawText(g, glyph, glyphFont, glyphBounds, selected ? ThemeColors.Accent : text,
                     TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.NoPadding);
                 left += 28;
             }

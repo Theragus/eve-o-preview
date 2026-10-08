@@ -7,6 +7,12 @@ user-facing: what changed and why it matters, not how it was implemented.
 Format: `## [version] - YYYY-MM-DD` headings, newest first, with `Added`, `Changed`, `Fixed`
 subsections as needed.
 
+## [10.0.0.21] - 2026-10-08
+
+### Fixed
+- Toggle switches and the selected tab now use your Windows accent colour instead of gold, and the
+  stray coloured lines around focused toggles in dark mode are gone.
+
 ## [10.0.0.20] - 2026-10-08
 
 ### Changed
