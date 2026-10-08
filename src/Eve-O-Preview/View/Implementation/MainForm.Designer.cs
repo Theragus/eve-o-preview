@@ -139,7 +139,7 @@ namespace EveOPreview.View
             VersionLabel = new Label();
             DocumentationLink = new LinkLabel();
             ClientsTabPage = new TabPage();
-            ContentTabControl = new TabControl();
+            ContentTabControl = new ThemedTabControl();
             ZoomTabPage = new TabPage();
             FpsLimiterTabPage = new TabPage();
             fpsMainLayoutPanel = new TableLayoutPanel();
@@ -2054,7 +2054,7 @@ namespace EveOPreview.View
         private TextBox txtToggleHideAllActiveHotkey;
         private Label lblToggleHideAllActiveHotkey;
         private Button btnToggleHideAll;
-        private TabControl ContentTabControl;
+        private ThemedTabControl ContentTabControl;
         private TabPage ClientsTabPage;
         private GroupBox groupBoxToggleHideAllThumbnails;
         private Button btnMinimizeAllClients;

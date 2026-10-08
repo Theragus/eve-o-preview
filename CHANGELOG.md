@@ -7,6 +7,12 @@ user-facing: what changed and why it matters, not how it was implemented.
 Format: `## [version] - YYYY-MM-DD` headings, newest first, with `Added`, `Changed`, `Fixed`
 subsections as needed.
 
+## [10.0.0.18] - 2026-10-08
+
+### Fixed
+- Settings window: the tab strip no longer stays light grey in dark mode. Tabs, strip and page
+  border now follow the theme, and the selected tab shows a gold accent bar.
+
 ## [10.0.0.17] - 2026-10-08
 
 ### Added

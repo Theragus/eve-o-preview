@@ -595,14 +595,11 @@ namespace EveOPreview.View
 
             Graphics graphics = e.Graphics;
 
-            Brush textBrush = new SolidBrush(SystemColors.ActiveCaptionText);
-            Brush backgroundBrush = (e.State == DrawItemState.Selected)
-                                        ? new SolidBrush(SystemColors.Control)
-                                        : new SolidBrush(SystemColors.ControlDark);
-            graphics.FillRectangle(backgroundBrush, e.Bounds);
+            // Background and selection accent are painted by ThemedTabControl; only the caption is drawn here.
+            using Brush textBrush = new SolidBrush(SystemColors.ControlText);
 
             // Use our own font
-            Font font = new Font("Arial", this.Font.Size * 1.5f, FontStyle.Bold, GraphicsUnit.Pixel);
+            using Font font = new Font("Arial", this.Font.Size * 1.5f, FontStyle.Bold, GraphicsUnit.Pixel);
 
             // Draw string and center the text
             StringFormat stringFlags = new StringFormat();
