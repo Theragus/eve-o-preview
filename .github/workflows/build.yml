@@ -1,0 +1,87 @@
+name: Build
+
+# Produces a ready-to-run EVE-O Preview build on every push to master, on pull requests,
+# and on demand. The result is a workflow artifact (Actions tab -> run -> "EVE-O Preview").
+# Pushing a tag such as v10.0.0.13 additionally attaches the zip to a GitHub Release.
+#
+# This mirrors the Cake "Build" task in build/Tasks/Build.cs: a single-file, framework-dependent
+# win-x64 app plus the NativeAOT Robin DLL. It does not run the Cake pipeline itself, which
+# deletes output directories and expects a code-signing certificate.
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish EVE-O Preview (single file, framework dependent)
+        run: >
+          dotnet publish src/Eve-O-Preview/Eve-O-Preview.csproj
+          -c Release -r win-x64 --self-contained false
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:IncludeAllContentForSelfExtract=true
+          -o out
+
+      # NativeAOT needs the MSVC toolchain; the windows-latest runner image ships Visual Studio with it.
+      - name: Publish Robin (NativeAOT shared library)
+        run: >
+          dotnet publish src/Eve-O-Preview.Robin/Eve-O-Preview.Robin.csproj
+          -c Release -r win-x64 -p:PublishAot=true
+          -o out
+
+      - name: Collect release files
+        run: |
+          New-Item -ItemType Directory -Force package | Out-Null
+          Copy-Item 'out/EVE-O Preview.exe' package/
+          Copy-Item out/Eve-O-Preview.Robin.dll package/
+          Copy-Item out/LICENSE.txt package/
+          Copy-Item 'out/Launch Eve-O Preview with Verbose Logging.cmd' package/
+          Get-ChildItem package
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EVE-O Preview
+          path: package/
+          if-no-files-found: error
+
+      - name: Zip for release
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: Compress-Archive -Path package/* -DestinationPath 'EVE-O Preview.zip'
+
+      - name: Attach to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: EVE-O Preview.zip
+          generate_release_notes: true
+
+  # The xUnit suite creates real WinForms windows on a private desktop. It has not been exercised
+  # on a hosted runner before, so it is reported separately and does not block the build artifact.
+  test:
+    runs-on: windows-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Run tests
+        run: dotnet test src/tests/Eve-O-Preview.Tests/Eve-O-Preview.Tests.csproj -c Debug
