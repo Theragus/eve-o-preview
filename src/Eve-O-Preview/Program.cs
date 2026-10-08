@@ -129,6 +129,9 @@ namespace EveOPreview
 
         private static void InitializeWinForms()
         {
+            // Follow the Windows light/dark setting (dark is Windows 11 only; ignored on older systems and in
+            // high-contrast mode). Must run before any control is created. Preview windows use explicit colours.
+            Application.SetColorMode(SystemColorMode.System);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
         }

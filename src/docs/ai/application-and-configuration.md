@@ -5,7 +5,7 @@ Read this page for startup, UI changes, persistence, profiles, and message routi
 
 ## Composition and lifecycle
 
-[Program.Main](../../Eve-O-Preview/Program.cs) is STA. `--attach-debug-sidecar` takes an early alternate path and does not run ordinary startup. Normal startup configures Serilog, acquires the single-instance token, installs exception handlers, builds the Autofac controller, initializes WinForms, launches the debugger sidecar, and runs `MainFormPresenter`.
+[Program.Main](../../Eve-O-Preview/Program.cs) is STA. `--attach-debug-sidecar` takes an early alternate path and does not run ordinary startup. Normal startup configures Serilog, acquires the single-instance token, installs exception handlers, builds the Autofac controller, initializes WinForms, launches the debugger sidecar, and runs `MainFormPresenter`. `InitializeWinForms` calls `Application.SetColorMode(SystemColorMode.System)` first, so the settings window and tray menu follow the Windows light/dark theme on Windows 11; `SystemColors` adapt, which is why the form relies on them rather than fixed colours. Preview and overlay windows set explicit colours and are unaffected.
 
 `GetInstanceToken` first tries `Mutex.OpenExisting`, treats an existing/inaccessible mutex as another instance, and creates a named mutex only after the other failure path. A static field retains the token for the application lifetime. Its comment records a prior Windows mutex failure that paralyzed the .NET finalizer thread and later manifested as out-of-memory exceptions. Preserve that rationale when evaluating a simpler implementation; the source review does not reproduce or independently confirm the historic failure.
 
