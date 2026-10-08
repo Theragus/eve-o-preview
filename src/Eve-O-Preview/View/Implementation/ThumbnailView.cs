@@ -45,6 +45,7 @@ namespace EveOPreview.View
         // Click-through: while enabled, the preview and overlay carry WS_EX_TRANSPARENT so mouse input reaches the
         // window beneath them. The style is lifted only while the configured modifier key is held down.
         private bool _clickModifierHeld;
+        private bool _modifierHookSubscribed;
 
         // Part of the logic (namely current size / position management)
         // was moved to the view due to the performance reasons
@@ -108,8 +109,6 @@ namespace EveOPreview.View
             
             _mediator = mediator;
             _keyboardMouseEvents = keyboardMouseEvents;
-            _keyboardMouseEvents.KeyDown += GlobalKeyDown_Handler;
-            _keyboardMouseEvents.KeyUp += GlobalKeyUp_Handler;
 
             InitializeContextMenu();
         }
@@ -252,8 +251,7 @@ namespace EveOPreview.View
             {
                 IsActive = false;
                 ExitCustomMouseMode();
-                _keyboardMouseEvents.KeyDown -= GlobalKeyDown_Handler;
-                _keyboardMouseEvents.KeyUp -= GlobalKeyUp_Handler;
+                SubscribeModifierHook(false);
                 components?.Dispose();
                 _overlay?.Dispose();
             }
@@ -827,6 +825,25 @@ namespace EveOPreview.View
             this.UpdateClickThrough();
         }
 
+        // The global keyboard hook is shared by every view and by the cycle hotkeys; only listen while the
+        // feature is on so an idle profile adds no per-keystroke work and leaves no stray delegates behind.
+        private void SubscribeModifierHook(bool subscribe)
+        {
+            if (subscribe == this._modifierHookSubscribed) return;
+            if (subscribe)
+            {
+                _keyboardMouseEvents.KeyDown += GlobalKeyDown_Handler;
+                _keyboardMouseEvents.KeyUp += GlobalKeyUp_Handler;
+            }
+            else
+            {
+                _keyboardMouseEvents.KeyDown -= GlobalKeyDown_Handler;
+                _keyboardMouseEvents.KeyUp -= GlobalKeyUp_Handler;
+                this._clickModifierHeld = false;
+            }
+            this._modifierHookSubscribed = subscribe;
+        }
+
         // WS_EX_TRANSPARENT together with WS_EX_LAYERED makes Windows deliver mouse input to whatever lies
         // beneath the preview, so a plain click lands in the game or desktop behind it. Hover zoom and the
         // context menu are therefore only reachable while the modifier is held. Re-evaluated on every refresh
@@ -839,6 +856,7 @@ namespace EveOPreview.View
                 this.BeginInvoke(new Action(this.UpdateClickThrough));
                 return;
             }
+            SubscribeModifierHook(this._config.RequireModifierClickToActivate);
             bool wanted = this._config.RequireModifierClickToActivate && !this._clickModifierHeld;
             ApplyClickThrough(this.Handle, wanted);
             if (this._overlay.IsHandleCreated) ApplyClickThrough(this._overlay.Handle, wanted);
