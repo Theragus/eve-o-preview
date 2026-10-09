@@ -66,8 +66,8 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
             CustomMutedEventIds = [123, uint.MaxValue, 3689163958, 123]
         };
         // Capture the host's pipe diagnostics so a failed update explains itself.
-        using var log = new StringWriter();
-        using var logger = new LoggerConfiguration().MinimumLevel.Verbose().WriteTo.TextWriter(log).CreateLogger();
+        var log = new CapturedLog();
+        using var logger = new LoggerConfiguration().MinimumLevel.Verbose().WriteTo.Sink(log).CreateLogger();
         var hook = new HookService(config, logger);
         // A synthetic handle gives this test its own pipe; no EVE process or hook is used.
         var handle = new IntPtr(-Random.Shared.NextInt64(1, long.MaxValue));
@@ -136,6 +136,17 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
         updated = await hook.UpdateMutedAudioAsync(handle).WaitAsync(timeout.Token);
         Assert.True(updated, $"Second update failed. Server task: {receive.Status} {receive.Exception?.GetBaseException()}\nHost log:\n{log}");
         Assert.Equal(presetIds.Order(), (await receive).Order());
+    }
+
+    // Serilog core has no text sink; this keeps the test free of extra sink packages.
+    private sealed class CapturedLog : Serilog.Core.ILogEventSink
+    {
+        private readonly System.Text.StringBuilder _text = new();
+        public void Emit(Serilog.Events.LogEvent logEvent)
+        {
+            lock (_text) _text.AppendLine($"[{logEvent.Level}] {logEvent.RenderMessage()}{(logEvent.Exception is null ? "" : " " + logEvent.Exception.Message)}");
+        }
+        public override string ToString() { lock (_text) return _text.ToString(); }
     }
 
     private static IThumbnailConfiguration CreateConfiguration() => (IThumbnailConfiguration)Activator.CreateInstance(
