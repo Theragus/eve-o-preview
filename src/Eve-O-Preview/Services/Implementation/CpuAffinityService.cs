@@ -234,22 +234,21 @@ public class CpuAffinityService : ICpuAffinityService
         _allCoresMask = CreateMask(PCores.Concat(ECores));
 
         // One-time logic to decide how to best divide the CPU into zones.
-        if (pCount >= 8) // High: 2 threads each plus 2 threads free for OS, events, etc.
+        //
+        // The clients that matter for responsiveness (active, predicted next, previous) are never
+        // confined: they may use every performance thread. Earlier versions gave the active client
+        // only two logical processors, i.e. the two SMT siblings of a single physical core, which
+        // capped the frame rate of the client being played. Only background clients are moved away
+        // from the performance cores, which is where the benefit of affinity management lies.
+        if (pCount >= 4)
         {
-            _logger.WithCallerInfo().Information("Using the High strategy with 8 or more performance threads.");
-            _activeMask = CreateMask(pThreads.GetRange(0, 2));
-            _nextMask = CreateMask(pThreads.GetRange(2, 2));
-            _prevMask = CreateMask(pThreads.GetRange(4, 2));
-            _backgroundMask = CreateMask(pThreads.Skip(6)); // We will override this later if we have access to E-Cores. But if we have no E-Cores then put the rest of the clients here in the background.
-        }
-        else if (pCount >= 4) // Mid: 1 thread each plus 1 thread free for OS, events, etc.
-        {
-            _logger.WithCallerInfo().Information("Using the Mid strategy with 4 or more performance threads.");
-            _activeMask = CreateMask(pThreads.GetRange(0, 1));
-            _nextMask = CreateMask(pThreads.GetRange(1, 1));
-            _prevMask = CreateMask(pThreads.GetRange(2, 1));
-            _backgroundMask = CreateMask(pThreads.Skip(3)); // We will override this later if we have access to E-Cores. But if we have no E-Cores then put the rest of the clients here in the background.
-
+            _logger.WithCallerInfo().Information("Foreground clients may use all {Count} performance threads; background clients are confined.", pCount);
+            _activeMask = CreateMask(pThreads);
+            _nextMask = _activeMask;
+            _prevMask = _activeMask;
+            // Without E-Cores, keep background clients on the upper half of the performance threads so
+            // they cannot occupy every core the foreground client wants. Overridden below when E-Cores exist.
+            _backgroundMask = CreateMask(pThreads.Skip(pCount / 2));
         }
         else // Low: Not enough threads available to be worth manually managing affinity.
         {

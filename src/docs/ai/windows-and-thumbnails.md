@@ -138,11 +138,12 @@ Client-window layouts are separate from thumbnail locations. `ApplyClientLayout`
 
 [CpuAffinityService](../../Eve-O-Preview/Services/Implementation/CpuAffinityService.cs) detects topology and precomputes masks once in its constructor. `PCores`/`ECores` actually contain **logical processor bit indices**, including SMT siblings, rather than objects representing physical cores.
 
-| Detected performance threads | Active | Predicted next | Previous | Background if no E threads |
-| --- | --- | --- | --- | --- |
-| At least 8 | First 2 | Next 2 | Next 2 | Remaining indices after 6 |
-| 4–7 | First 1 | Next 1 | Next 1 | Remaining indices after 3 |
-| Below 4 | Automatic affinity unsupported | — | — | — |
+| Detected performance threads | Active, predicted next, previous | Background if no E threads |
+| --- | --- | --- |
+| At least 4 | All performance threads (never confined) | Upper half of the performance threads |
+| Below 4 | Automatic affinity unsupported | — |
+
+Until 10.0.0.23 the active client received only two logical processors, the SMT siblings of one physical core, which capped the played client's frame rate; the strategy now only confines background clients.
 
 If E threads exist, their mask replaces the background mask. The service does not set priority class (`SetPriorityClass` is commented out); comments about spare OS capacity describe intent, not an exclusive CPU reservation.
 

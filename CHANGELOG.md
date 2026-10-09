@@ -7,6 +7,15 @@ user-facing: what changed and why it matters, not how it was implemented.
 Format: `## [version] - YYYY-MM-DD` headings, newest first, with `Added`, `Changed`, `Fixed`
 subsections as needed.
 
+## [10.0.0.24] - 2026-10-09
+
+### Fixed
+- Dynamic CPU Affinity Strategy no longer limits the client you are playing. It used to pin the
+  active client to two logical processors, the two threads of a single physical core, which capped
+  its frame rate. Active, predicted and previous clients may now use all performance cores; only
+  background clients are moved to the efficiency cores (or the upper half of the cores on CPUs
+  without them). If you turned the option off because of low FPS, it is worth enabling again.
+
 ## [10.0.0.23] - 2026-10-08
 
 ### Fixed
