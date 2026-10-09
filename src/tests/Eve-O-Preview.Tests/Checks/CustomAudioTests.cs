@@ -65,7 +65,9 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
             MuteLocationBanner = presets,
             CustomMutedEventIds = [123, uint.MaxValue, 3689163958, 123]
         };
-        using var logger = new LoggerConfiguration().CreateLogger();
+        // Capture the host's pipe diagnostics so a failed update explains itself.
+        using var log = new StringWriter();
+        using var logger = new LoggerConfiguration().MinimumLevel.Verbose().WriteTo.TextWriter(log).CreateLogger();
         var hook = new HookService(config, logger);
         // A synthetic handle gives this test its own pipe; no EVE process or hook is used.
         var handle = new IntPtr(-Random.Shared.NextInt64(1, long.MaxValue));
@@ -125,12 +127,14 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
 
         uint[] presetIds = presets ? [3689163958, 1537508544, 1768044352, 2377891014, 3090840445] : [];
         var receive = ReceiveUpdate();
-        Assert.True(await hook.UpdateMutedAudioAsync(handle).WaitAsync(timeout.Token));
+        bool updated = await hook.UpdateMutedAudioAsync(handle).WaitAsync(timeout.Token);
+        Assert.True(updated, $"First update failed. Server task: {receive.Status} {receive.Exception?.GetBaseException()}\nHost log:\n{log}");
         Assert.Equal(presetIds.Concat(new uint[] { 123, uint.MaxValue, 3689163958 }).Distinct().Order(), (await receive).Order());
 
         config.AudioMuteSettings.CustomMutedEventIds.Clear();
         receive = ReceiveUpdate();
-        Assert.True(await hook.UpdateMutedAudioAsync(handle).WaitAsync(timeout.Token));
+        updated = await hook.UpdateMutedAudioAsync(handle).WaitAsync(timeout.Token);
+        Assert.True(updated, $"Second update failed. Server task: {receive.Status} {receive.Exception?.GetBaseException()}\nHost log:\n{log}");
         Assert.Equal(presetIds.Order(), (await receive).Order());
     }
 
